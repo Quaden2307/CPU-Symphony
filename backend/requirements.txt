@@ -1,0 +1,5 @@
+psutil==5.9.6
+matplotlib==3.9.0
+numpy==1.26.4
+aiohttp==3.9.1
+aiohttp-cors==0.7.0
