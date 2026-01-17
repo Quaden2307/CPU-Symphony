@@ -1,224 +1,239 @@
 import time
 import psutil
 import numpy as np
-from multiprocessing import Process, cpu_count
+from multiprocessing import cpu_count
 import threading
+import winsound  # For playing sounds on Windows
 
-def get_current_cpu():
-    """Get current CPU usage percentage."""
-    return psutil.cpu_percent(interval=0.1)
+# Musical notes mapping to CPU levels (7 notes, ~14% each)
+NOTES = {
+    'C': (0, 15),      # 0-15% - Very Light
+    'D': (15, 30),     # 15-30% - Light
+    'E': (30, 45),     # 30-45% - Light-Medium
+    'F': (45, 60),     # 45-60% - Medium
+    'G': (60, 75),     # 60-75% - Medium-Heavy
+    'A': (75, 90),     # 75-90% - Heavy
+    'B': (90, 100),    # 90-100% - Very Heavy
+}
 
-def bubble_sort_workload(size):
-    """Lightweight sorting workload."""
-    arr = np.random.randint(0, 1000, size).tolist()
-    n = len(arr)
-    for i in range(n):
-        for j in range(0, n-i-1):
-            if arr[j] > arr[j+1]:
-                arr[j], arr[j+1] = arr[j+1], arr[j]
+# Musical note frequencies (in Hz) - C4 major scale
+NOTE_FREQUENCIES = {
+    'C': 262,  # C4
+    'D': 294,  # D4
+    'E': 330,  # E4
+    'F': 349,  # F4
+    'G': 392,  # G4
+    'A': 440,  # A4
+    'B': 494,  # B4
+}
 
-def matrix_multiplication_workload(size):
-    """Medium matrix computation workload."""
-    a = np.random.rand(size, size)
-    b = np.random.rand(size, size)
-    c = np.dot(a, b)
-    return c
+# ============ WORKLOAD FUNCTIONS ============
 
-def heavy_computation_workload(iterations):
-    """Heavy computational workload with prime number checking."""
-    def is_prime(n):
-        if n < 2:
-            return False
-        for i in range(2, int(n ** 0.5) + 1):
-            if n % i == 0:
-                return False
-        return True
+def bubble_sort_light():
+    """C note (~10% CPU) - Light load with sleep."""
+    # Small matrix ops with sleep - keep this one good
+    a = np.random.rand(400, 400)
+    b = np.random.rand(400, 400)
+    _ = np.dot(a, b)
+    time.sleep(0.05)
 
-    primes = []
-    for i in range(iterations):
-        if is_prime(i):
-            primes.append(i)
-    return primes
-
-def pathfinding_workload(grid_size):
-    """Pathfinding simulation workload."""
-    grid = np.random.rand(grid_size, grid_size)
-
-    # Simple BFS-like traversal
-    visited = set()
-    queue = [(0, 0)]
-
-    while queue:
-        x, y = queue.pop(0)
-        if (x, y) in visited:
-            continue
-        visited.add((x, y))
-
-        # Add neighbors
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < grid_size and 0 <= ny < grid_size:
-                queue.append((nx, ny))
-
-def fibonacci_workload(n):
-    """Recursive fibonacci workload."""
-    def fib(x):
-        if x <= 1:
-            return x
-        return fib(x-1) + fib(x-2)
-
-    results = []
-    for i in range(n):
-        results.append(fib(min(i, 30)))  # Cap at 30 to prevent too much recursion
-    return results
-
-def busy_loop_light():
-    """Light CPU intensive loop - 1000x1000 matrix multiplication."""
-    a = np.random.rand(1000, 1000)
-    b = np.random.rand(1000, 1000)
+def fractal_light():
+    """D note (~25% CPU) - Medium computation."""
+    # Slightly larger matrix, less sleep for higher CPU
+    a = np.random.rand(550, 550)
+    b = np.random.rand(550, 550)
     result = np.dot(a, b)
-    return result
+    result = np.sin(result) * np.cos(result)
+    time.sleep(0.008)
 
-def busy_loop_medium():
-    """Medium CPU intensive loop - 1000x1000 matrix multiplication twice."""
-    a = np.random.rand(1000, 1000)
-    b = np.random.rand(1000, 1000)
+def binary_tree_medium():
+    """E note (~40% CPU) - Heavier computation."""
+    # Smaller matrix, more sleep to lower it
+    a = np.random.rand(500, 500)
+    b = np.random.rand(500, 500)
     result = np.dot(a, b)
-    c = np.random.rand(1000, 1000)
+    result = np.sin(result) * np.cos(result)
+    time.sleep(0.008)
+
+def maze_generation_medium():
+    """F note (~55% CPU) - Heavy computation."""
+    # Smaller size to lower by ~10%
+    a = np.random.rand(620, 620)
+    b = np.random.rand(620, 620)
+    result = np.dot(a, b)
+    result = np.sin(result) * np.cos(result)
+    result = np.sqrt(np.abs(result))
+    time.sleep(0.004)
+
+def particle_collision_heavy():
+    """G note (~70% CPU) - Very heavy computation."""
+    # Significantly larger for better separation
+    a = np.random.rand(850, 850)
+    b = np.random.rand(850, 850)
+    result = np.dot(a, b)
+    result = np.sin(result) * np.cos(result)
+    c = np.random.rand(850, 850)
     result = np.dot(result, c)
-    return result
+    time.sleep(0.001)
 
-def busy_loop_heavy():
-    """Heavy CPU intensive loop - Multiple 1000x1000 matrix multiplications."""
-    a = np.random.rand(1000, 1000)
-    b = np.random.rand(1000, 1000)
+def matrix_multiply_very_heavy():
+    """A note (~85% CPU) - Extreme computation."""
+    # Much larger to push higher
+    a = np.random.rand(1300, 1300)
+    b = np.random.rand(1300, 1300)
     result = np.dot(a, b)
-    c = np.random.rand(1000, 1000)
+    result = np.sin(result) * np.cos(result)
+    c = np.random.rand(1300, 1300)
     result = np.dot(result, c)
-    d = np.random.rand(1000, 1000)
-    result = np.dot(result, d)
-    return result
+
+def sudoku_solver_extreme():
+    """B note (~100% CPU) - MAXIMUM computation."""
+    # MASSIVELY larger to push to 90%+
+    a = np.random.rand(1700, 1700)
+    b = np.random.rand(1700, 1700)
+    result = np.dot(a, b)
+    result = np.sin(result) * np.cos(result)
+
+    c = np.random.rand(1700, 1700)
+    result2 = np.dot(c, result)
+    result2 = np.sqrt(np.abs(result2))
+
+    # Additional computation to really max it out
+    d = np.random.rand(1700, 1700)
+    result3 = np.dot(result2[:1500, :1500], d[:1500, :1500])
+
+# ============ WORKER THREADS ============
 
 def worker_thread(end_time, work_func):
     """Worker thread that runs work_func until end_time."""
     while time.time() < end_time:
         work_func()
 
-def calibrated_workload_30():
-    """Target ~30% CPU usage - Light workload using 2 cores (sustained 5 seconds)."""
-    print("\n[30% TARGET] Running light workload on 2 threads...")
-    duration = 5.0
-    end_time = time.time() + duration
+def play_note_sound(note, duration_ms=500):
+    """Play a musical note using the system speaker."""
+    frequency = NOTE_FREQUENCIES.get(note, 440)
+    winsound.Beep(frequency, duration_ms)
 
-    # Use 2 threads for 30% (on typical 8-core system = 25% of total CPU)
-    num_threads = 2
+def run_note_workload(note, num_threads, duration=4, play_sound=False):
+    """Run a workload targeting a specific note."""
+    workload_map = {
+        'C': bubble_sort_light,
+        'D': fractal_light,
+        'E': binary_tree_medium,
+        'F': maze_generation_medium,
+        'G': particle_collision_heavy,
+        'A': matrix_multiply_very_heavy,
+        'B': sudoku_solver_extreme,
+    }
+
+    work_func = workload_map[note]
+    print(f"\n[NOTE {note}] Running on {num_threads} threads for {duration}s...")
+
+    # Play sound at the start if requested
+    if play_sound:
+        play_note_sound(note, duration_ms=500)
+
+    end_time = time.time() + duration
     threads = []
 
     for _ in range(num_threads):
-        t = threading.Thread(target=worker_thread, args=(end_time, busy_loop_light))
+        t = threading.Thread(target=worker_thread, args=(end_time, work_func))
         t.start()
         threads.append(t)
 
     for t in threads:
         t.join()
 
-    print(f"  Completed 30% workload")
-    time.sleep(2)
+    print(f"  Completed {note}")
+    time.sleep(0.2)
 
-def calibrated_workload_50():
-    """Target ~50% CPU usage - Medium workload using 4 cores (sustained 5 seconds)."""
-    print("\n[50% TARGET] Running medium workload on 4 threads...")
-    duration = 5.0
-    end_time = time.time() + duration
-
-    # Use 4 threads for 50% (on typical 8-core system = 50% of total CPU)
-    num_threads = 4
-    threads = []
-
-    for _ in range(num_threads):
-        t = threading.Thread(target=worker_thread, args=(end_time, busy_loop_medium))
-        t.start()
-        threads.append(t)
-
-    for t in threads:
-        t.join()
-
-    print(f"  Completed 50% workload")
-    time.sleep(2)
-
-def calibrated_workload_70():
-    """Target ~70% CPU usage - Heavy workload using 6 cores (sustained 5 seconds)."""
-    print("\n[70% TARGET] Running heavy workload on 6 threads...")
-    duration = 5.0
-    end_time = time.time() + duration
-
-    # Use 6 threads for 70% (on typical 8-core system = 75% of total CPU)
-    num_threads = 6
-    threads = []
-
-    for _ in range(num_threads):
-        t = threading.Thread(target=worker_thread, args=(end_time, busy_loop_heavy))
-        t.start()
-        threads.append(t)
-
-    for t in threads:
-        t.join()
-
-    print(f"  Completed 70% workload")
-    time.sleep(2)
-
-def calibrated_workload_90():
-    """Target ~90% CPU usage - Very heavy workload using ALL cores (sustained 5 seconds)."""
-    print(f"\n[90% TARGET] Running very heavy workload on {cpu_count()} threads...")
-    duration = 5.0
-    end_time = time.time() + duration
-
-    # Use all CPU cores for maximum load
-    num_threads = cpu_count()
-    threads = []
-
-    for _ in range(num_threads):
-        t = threading.Thread(target=worker_thread, args=(end_time, busy_loop_heavy))
-        t.start()
-        threads.append(t)
-
-    for t in threads:
-        t.join()
-
-    print(f"  Completed 90% workload")
-    time.sleep(2)
-
-def run_all_workloads():
-    """Run all calibrated workloads sequentially."""
+def play_twinkle_twinkle():
+    """Play Twinkle Twinkle Little Star with CPU workloads and sound."""
     print("="*60)
-    print("COMPUTATIONAL WORKLOAD TEST")
+    print("TWINKLE TWINKLE LITTLE STAR - CPU MUSICAL PERFORMANCE")
+    print("="*60)
+    print(f"System has {cpu_count()} CPU cores")
+    print("Watch cpu_monitor.py and listen to the speakers!")
+    print("="*60)
+
+    # Twinkle Twinkle Little Star note sequence
+    # C C G G A A G - F F E E D D C
+    # Twinkle twinkle little star, how I wonder what you are
+    song = [
+        'C', 'C', 'G', 'G', 'A', 'A', 'G',  # Twinkle twinkle little star
+        'F', 'F', 'E', 'E', 'D', 'D', 'C',  # How I wonder what you are
+    ]
+
+    cores = cpu_count()
+
+    # Thread mapping for each note
+    thread_map = {
+        'C': 1,
+        'D': 2,
+        'E': max(3, cores // 3),
+        'F': max(4, cores // 2),
+        'G': max(5, (cores * 2) // 3),
+        'A': max(6, (cores * 3) // 4),
+        'B': cores,
+    }
+
+    time.sleep(2)
+
+    for i, note in enumerate(song, 1):
+        print(f"\n[{i}/{len(song)}] Playing note: {note}")
+        num_threads = thread_map[note]
+        run_note_workload(note, num_threads, duration=0.5, play_sound=True)
+        # 1 second delay already in run_note_workload
+
+    print("\n" + "="*60)
+    print("SONG COMPLETE!")
+    print("="*60)
+
+def run_all_notes():
+    """Run all 7 notes sequentially."""
+    print("="*60)
+    print("MUSICAL CPU WORKLOAD TEST - 7 NOTES (C to B)")
     print("="*60)
     print(f"System has {cpu_count()} CPU cores")
     print("Starting workload tests...")
-    print("(Make sure cpu_monitor.py is running in another terminal)")
+    print("(Watch cpu_monitor.py to see notes being played)")
     print("="*60)
 
-    time.sleep(2)  # Give time to see baseline
+    time.sleep(2)
 
-    # Run workloads in sequence
-    calibrated_workload_30()
-    calibrated_workload_50()
-    calibrated_workload_70()
-    calibrated_workload_90()
+    # Calculate threads for each note
+    cores = cpu_count()
 
-    # Repeat the cycle
-    print("\n" + "="*60)
-    print("REPEATING CYCLE...")
-    print("="*60)
+    # Run each note twice with carefully tuned threading (4 seconds each)
+    for cycle in range(2):
+        print(f"\n--- CYCLE {cycle+1} ---")
 
-    calibrated_workload_30()
-    calibrated_workload_50()
-    calibrated_workload_70()
-    calibrated_workload_90()
+        # C: ~10% CPU - 1 thread
+        run_note_workload('C', 1, 4)
+
+        # D: ~25% CPU - 2 threads
+        run_note_workload('D', 2, 4)
+
+        # E: ~40% CPU - 3-4 threads
+        run_note_workload('E', max(3, cores // 3), 4)
+
+        # F: ~55% CPU - 4-5 threads
+        run_note_workload('F', max(4, cores // 2), 4)
+
+        # G: ~70% CPU - 5-6 threads
+        run_note_workload('G', max(5, (cores * 2) // 3), 4)
+
+        # A: ~85% CPU - 6-7 threads
+        run_note_workload('A', max(6, (cores * 3) // 4), 4)
+
+        # B: ~100% CPU - all cores
+        run_note_workload('B', cores, 4)
 
     print("\n" + "="*60)
     print("TEST COMPLETE")
     print("="*60)
 
 if __name__ == "__main__":
-    run_all_workloads()
+    # Choose which function to run:
+    # run_all_notes()  # Run all notes in sequence (test mode)
+    play_twinkle_twinkle()  # Play Twinkle Twinkle Little Star
