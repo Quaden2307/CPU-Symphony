@@ -36,22 +36,35 @@ const BinaryTree = () => {
     const MAX_DEPTH = 4; // Reduced to 4 as requested
     // Removed fixed ROOT_VALUE
 
-    // Generate random 6-digit number
-    const generateRootValue = () => Math.floor(Math.random() * 900000) + 100000;
+    // Generate random number with specific digits
+    const generateValue = (digits) => {
+      const min = Math.pow(10, digits - 1);
+      const max = Math.pow(10, digits) - 1;
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
 
-    // Generate tree data with random children
+    // Generate tree data with specific digit counts
     const generateTreeData = (depth, val) => {
       if (depth === 0) return null;
+
+      // Calculate digits for the NEXT level (children)
+      // Current depth is 'depth'. Children are 'depth - 1'.
+      // Mapping:
+      // Depth 3 (Children of Root) -> 5 digits
+      // Depth 2 -> 4 digits
+      // Depth 1 -> 3 digits
+      const nextDigits = (depth - 1) + 2;
+
       return {
         value: val,
-        left: generateTreeData(depth - 1, Math.floor(Math.random() * 999999)),
-        right: generateTreeData(depth - 1, Math.floor(Math.random() * 999999))
+        left: generateTreeData(depth - 1, generateValue(nextDigits)),
+        right: generateTreeData(depth - 1, generateValue(nextDigits))
       };
     };
 
     // Initialize tree data
     if (!treeDataRef.current) {
-      treeDataRef.current = generateTreeData(MAX_DEPTH, generateRootValue());
+      treeDataRef.current = generateTreeData(MAX_DEPTH, generateValue(6));
     }
 
     const drawNode = (node, x, y, level, maxLevel, currentProgress, scale, baseSpread, verticalStep) => {
@@ -186,7 +199,7 @@ const BinaryTree = () => {
       } else {
         // Reset and Regenerate
         progressRef.current = 1;
-        treeDataRef.current = generateTreeData(MAX_DEPTH, generateRootValue());
+        treeDataRef.current = generateTreeData(MAX_DEPTH, generateValue(6));
       }
 
       const rootX = width / 2;
