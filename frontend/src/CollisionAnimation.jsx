@@ -45,30 +45,15 @@ const CollisionAnimation = () => {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
 
-        // Create gradient for 3D effect
-        const gradient = ctx.createRadialGradient(
-          this.x - this.radius * 0.3,
-          this.y - this.radius * 0.3,
-          this.radius * 0.1,
-          this.x,
-          this.y,
-          this.radius
-        );
-
-        // Flash white on collision
+        // Use solid color instead of gradient
         if (this.collisionFlash > 0) {
           const flashIntensity = this.collisionFlash;
-          gradient.addColorStop(0, `rgba(255, 255, 255, ${0.9 * flashIntensity})`);
-          gradient.addColorStop(0.3, this.color);
-          gradient.addColorStop(1, this.darkenColor(this.color, 40));
+          ctx.fillStyle = `rgba(255, 255, 255, ${0.3 * flashIntensity})`;
           this.collisionFlash -= 0.05;
         } else {
-          gradient.addColorStop(0, this.lightenColor(this.color, 30));
-          gradient.addColorStop(0.5, this.color);
-          gradient.addColorStop(1, this.darkenColor(this.color, 40));
+          ctx.fillStyle = this.color;
         }
 
-        ctx.fillStyle = gradient;
         ctx.fill();
 
         // Add glow effect
@@ -301,11 +286,7 @@ const CollisionAnimation = () => {
       ctx.shadowBlur = 0;
 
       // Draw inner glow on box
-      const innerGradient = ctx.createLinearGradient(boxX, boxY, boxX + boxW, boxY + boxH);
-      innerGradient.addColorStop(0, 'rgba(6, 182, 212, 0.05)');
-      innerGradient.addColorStop(0.5, 'rgba(168, 85, 247, 0.05)');
-      innerGradient.addColorStop(1, 'rgba(236, 72, 153, 0.05)');
-      ctx.fillStyle = innerGradient;
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.05)';
       ctx.fill();
 
       // Update ball positions - SUPER FAST: 5 updates per frame

@@ -157,7 +157,7 @@ function App() {
               <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold text-cyan-400">
                 CPU Symphony
               </h1>
               <p className="text-xs text-slate-500">Music from Machines</p>
@@ -185,7 +185,6 @@ function App() {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
           <div className="glass-panel p-4 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Current CPU</p>
             <p className={`text-3xl font-bold ${getCPUColor(currentCPU)} transition-colors`}>
               {currentCPU.toFixed(1)}%
@@ -194,7 +193,6 @@ function App() {
           </div>
 
           <div className="glass-panel p-4 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Peak CPU</p>
             <p className="text-3xl font-bold text-purple-400">
               {peakCPU.toFixed(1)}%
@@ -223,7 +221,7 @@ function App() {
                 console.error('Failed to start workload:', err);
               }
             }}
-            className="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-lg font-medium text-sm transition-all duration-200 active:scale-95"
+            className="w-full px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-medium text-sm transition-all duration-200 active:scale-95"
           >
             ▶ Play Twinkle Twinkle
           </button>
@@ -241,17 +239,7 @@ function App() {
 
           <div className="h-[calc(100%-2rem)] relative">
             <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#06b6d4" />
-                  <stop offset="50%" stopColor="#a855f7" />
-                  <stop offset="100%" stopColor="#ec4899" />
-                </linearGradient>
-                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
-                </linearGradient>
-              </defs>
+              <defs />
 
               {/* Grid lines */}
               {[25, 50, 75].map(y => (
@@ -272,7 +260,7 @@ function App() {
                 d={cpuHistory.length > 0 ? `M 0,${100 - cpuHistory[0]} ${cpuHistory.map((v, i) =>
                   `L ${(i / Math.max(cpuHistory.length - 1, 1)) * 100},${100 - v}`
                 ).join(' ')} L 100,100 L 0,100 Z` : ''}
-                fill="url(#areaGradient)"
+                fill="#06b6d4" opacity="0.2"
               />
 
               {/* Line */}
@@ -281,7 +269,7 @@ function App() {
                   `L ${(i / Math.max(cpuHistory.length - 1, 1)) * 100},${100 - v}`
                 ).join(' ')}` : ''}
                 fill="none"
-                stroke="url(#lineGradient)"
+                stroke="#06b6d4"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"

@@ -171,15 +171,10 @@ const CollatzAnimation = () => {
             const p1 = points[i];
             const p2 = points[i + 1];
 
-            const gradient = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
             const alpha = 0.2;
-            const c1 = getColor(p1.value, seq.maxValue);
-            const c2 = getColor(p2.value, seq.maxValue);
+            const color = getColor(p1.value, seq.maxValue);
             
-            gradient.addColorStop(0, c1.replace(')', `, ${alpha})`).replace('rgb', 'rgba'));
-            gradient.addColorStop(1, c2.replace(')', `, ${alpha})`).replace('rgb', 'rgba'));
-
-            ctx.strokeStyle = gradient;
+            ctx.strokeStyle = color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
@@ -198,11 +193,7 @@ const CollatzAnimation = () => {
           const p1 = displayedPoints[i];
           const p2 = displayedPoints[i + 1];
 
-          const gradient = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
-          gradient.addColorStop(0, getColor(p1.value, maxValue));
-          gradient.addColorStop(1, getColor(p2.value, maxValue));
-
-          ctx.strokeStyle = gradient;
+          ctx.strokeStyle = getColor(p1.value, maxValue);
           ctx.beginPath();
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(p2.x, p2.y);
