@@ -1,7 +1,10 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Activity, Zap, BarChart3, Wifi, WifiOff, Music, Network } from 'lucide-react';
+import { Activity, Zap, BarChart3, Wifi, WifiOff, Music, Network, Circle, Snowflake, TrendingUp } from 'lucide-react';
 import BinaryTree from './BinaryTree';
+import CollisionAnimation from './CollisionAnimation';
+import FractalAnimation from './FractalAnimation';
+import CollatzAnimation from './CollatzAnimation';
 
 const WEBSOCKET_URL = 'ws://localhost:8766/ws';
 
@@ -18,7 +21,7 @@ function App() {
   const [connectionError, setConnectionError] = useState(null);
   const [activeNoteIndex, setActiveNoteIndex] = useState(0);
   const [barPosition, setBarPosition] = useState(0);
-  const [viewMode, setViewMode] = useState('dashboard'); // 'dashboard' or 'tree'
+  const [viewMode, setViewMode] = useState('dashboard'); // 'dashboard', 'tree', 'collision', 'fractal', or 'collatz'
 
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
@@ -343,6 +346,27 @@ function App() {
               >
                 <Network size={16} />
               </button>
+              <button
+                onClick={() => setViewMode('collision')}
+                className={`p-2 rounded-md transition-all ${viewMode === 'collision' ? 'bg-slate-800 text-pink-400' : 'text-slate-500 hover:text-slate-300'}`}
+                title="Collision Physics"
+              >
+                <Circle size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('fractal')}
+                className={`p-2 rounded-md transition-all ${viewMode === 'fractal' ? 'bg-slate-800 text-green-400' : 'text-slate-500 hover:text-slate-300'}`}
+                title="Fractal Flames"
+              >
+                <Snowflake size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('collatz')}
+                className={`p-2 rounded-md transition-all ${viewMode === 'collatz' ? 'bg-slate-800 text-orange-400' : 'text-slate-500 hover:text-slate-300'}`}
+                title="Collatz Conjecture"
+              >
+                <TrendingUp size={16} />
+              </button>
             </div>
           </div>
         </div>
@@ -571,10 +595,29 @@ function App() {
               </div>
             </div>
           </>
-        ) : (
+        ) : viewMode === 'tree' ? (
           <div className="glass-panel p-4 flex-1 flex flex-col justify-center items-center text-center">
+            <Network className="w-12 h-12 text-purple-400 mb-4" />
             <h3 className="text-xl font-bold mb-2">Binary Tree Mode</h3>
             <p className="text-slate-500">Visualization controls are automated in this mode.</p>
+          </div>
+        ) : viewMode === 'collision' ? (
+          <div className="glass-panel p-4 flex-1 flex flex-col justify-center items-center text-center">
+            <Circle className="w-12 h-12 text-pink-400 mb-4" />
+            <h3 className="text-xl font-bold mb-2">Collision Physics Mode</h3>
+            <p className="text-slate-500">Watch balls bounce and collide with elastic physics.</p>
+          </div>
+        ) : viewMode === 'fractal' ? (
+          <div className="glass-panel p-4 flex-1 flex flex-col justify-center items-center text-center">
+            <Snowflake className="w-12 h-12 text-green-400 mb-4" />
+            <h3 className="text-xl font-bold mb-2">Fractal Flames Mode</h3>
+            <p className="text-slate-500">Iterated function system visualization.</p>
+          </div>
+        ) : (
+          <div className="glass-panel p-4 flex-1 flex flex-col justify-center items-center text-center">
+            <TrendingUp className="w-12 h-12 text-orange-400 mb-4" />
+            <h3 className="text-xl font-bold mb-2">Collatz Conjecture</h3>
+            <p className="text-slate-500">3n+1 sequence visualization.</p>
           </div>
         )}
       </div>
@@ -584,6 +627,18 @@ function App() {
         {viewMode === 'tree' ? (
           <div className="glass-panel flex-1 relative overflow-hidden">
             <BinaryTree />
+          </div>
+        ) : viewMode === 'collision' ? (
+          <div className="glass-panel flex-1 relative overflow-hidden">
+            <CollisionAnimation />
+          </div>
+        ) : viewMode === 'fractal' ? (
+          <div className="glass-panel flex-1 relative overflow-hidden">
+            <FractalAnimation />
+          </div>
+        ) : viewMode === 'collatz' ? (
+          <div className="glass-panel flex-1 relative overflow-hidden">
+            <CollatzAnimation />
           </div>
         ) : (
           <div className="glass-panel flex-1 relative overflow-hidden">
